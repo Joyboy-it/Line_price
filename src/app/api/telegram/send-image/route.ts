@@ -33,6 +33,9 @@ export async function POST(request: NextRequest) {
         // Remove leading slash if exists and construct Supabase Storage URL
         const cleanPath = imageUrl.replace(/^\//, '')
         fullImageUrl = `${supabaseUrl}/storage/v1/object/public/price-images/${cleanPath}`
+        
+        // Remove any query parameters that Telegram doesn't like
+        fullImageUrl = fullImageUrl.split('?')[0]
       } else {
         // Fallback to Vercel URL if Supabase URL not available
         const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
