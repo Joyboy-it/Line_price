@@ -157,14 +157,12 @@ export default function AdminPriceGroupImagesPage({
             
             // Send each image to Telegram
             for (const img of newImages) {
-              // Ensure proper URL format with slash
-              const filePath = img.file_path.startsWith('/') ? img.file_path : `/${img.file_path}`
-              const imageUrl = `${window.location.origin}${filePath}`
+              // Send file_path directly - API will convert to Supabase URL
               await fetch('/api/telegram/send-image', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  imageUrl,
+                  imageUrl: img.file_path,
                   caption: `<b>${priceGroup.name}</b>\n${img.file_name || ''}`,
                   chatId: priceGroup.telegram_chat_id
                 })
