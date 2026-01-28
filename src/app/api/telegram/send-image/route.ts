@@ -23,12 +23,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Telegram not configured' }, { status: 500 })
     }
 
-    // Validate image URL is publicly accessible
+    // Convert to Supabase Storage public URL
     let fullImageUrl = imageUrl
+    
+    // If it's a relative path, convert to Supabase public URL
     if (imageUrl.startsWith('/')) {
-      // Convert relative URL to absolute URL
-      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-      fullImageUrl = `${baseUrl}${imageUrl}`
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      if (supabaseUrl) {
+        // Remove leading slash and construct Supabase Storage URL
+        const cleanPath = imageUrl.replace(/^\//, '')
+        fullImageUrl = `${supabaseUrl}/storage/v1/object/public/${cleanPath}`
+      } else {
+        // Fallback to Vercel URL if Supabase URL not available
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+        fullImageUrl = `${baseUrl}${imageUrl}`
+      }
     }
 
     console.log('[Telegram] Full image URL:', fullImageUrl)
