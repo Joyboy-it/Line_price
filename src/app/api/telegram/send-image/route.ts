@@ -26,17 +26,18 @@ export async function POST(request: NextRequest) {
     // Convert to Supabase Storage public URL
     let fullImageUrl = imageUrl
     
-    // If it's a relative path, convert to Supabase public URL
-    if (imageUrl.startsWith('/')) {
+    // If it's not a full URL (http/https), convert to Supabase public URL
+    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
       if (supabaseUrl) {
-        // Remove leading slash and construct Supabase Storage URL
+        // Remove leading slash if exists and construct Supabase Storage URL
         const cleanPath = imageUrl.replace(/^\//, '')
-        fullImageUrl = `${supabaseUrl}/storage/v1/object/public/${cleanPath}`
+        fullImageUrl = `${supabaseUrl}/storage/v1/object/public/price-images/${cleanPath}`
       } else {
         // Fallback to Vercel URL if Supabase URL not available
         const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-        fullImageUrl = `${baseUrl}${imageUrl}`
+        const filePath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`
+        fullImageUrl = `${baseUrl}${filePath}`
       }
     }
 
