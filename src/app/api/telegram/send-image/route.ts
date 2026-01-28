@@ -64,11 +64,19 @@ export async function POST(request: NextRequest) {
         url: telegramUrl,
         chatId,
         imageUrl: fullImageUrl,
-        response: data
+        response: data,
+        botToken: botToken ? 'SET' : 'NOT SET',
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'NOT SET'
       })
       return NextResponse.json({ 
         error: 'Failed to send to Telegram', 
-        details: data 
+        details: data,
+        debug: {
+          imageUrl: fullImageUrl,
+          chatId,
+          errorCode: data.error_code,
+          errorDescription: data.description
+        }
       }, { status: 500 })
     }
 
